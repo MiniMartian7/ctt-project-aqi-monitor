@@ -26,21 +26,21 @@ const App = () => {
 
   const handleAddClick = async e =>{
     //e.preventDefault()
-    try{
-      await axios.post("http://localhost:8800/", entry)
-    }catch(err){
-      console.log(err)
+    if (
+    entry.pm2_5 !== null &&
+    entry.VOC_index !== null &&
+    entry.temperature !== null &&
+    entry.humidity !== null
+    ) {
+      try{
+        await axios.post("http://localhost:8800/", entry);
+      }catch(err){
+        console.log(err)
+      }
     }
-  }
-
-  const generateDataset = (paramName, color) => {
-    return {
-      label: paramName,
-      data: entries.map((entry) => entry[paramName]),
-      fill: false,
-      backgroundColor: `rgba(${color}, 0.2)`,
-      borderColor: `rgba(${color}, 1)`,
-   };
+    else {
+      window.alert('Some properties in entry are null. Please fill in all values.');
+    }
   }
 
   useEffect(()=>{
@@ -55,12 +55,36 @@ const App = () => {
 
         // Update datasets based on fetched entries
         const datasets = {
-          labels: chartLabels,
+          labels: labels,
           datasets: [
-            generateDataset('pm2_5', '255, 99, 132'),
-            generateDataset('VOC_index', '54, 162, 235'),
-            generateDataset('temperature', '255, 206, 86'),
-            generateDataset('humidity', '75, 192, 192'),
+            {
+              label: 'PM 2.5',
+              data: entries.map((entry) => entry['pm2_5']),
+              fill: false,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+            },
+            {
+              label: 'VOC index',
+              data: entries.map((entry) => entry['VOC_index']),
+              fill: false,
+              backgroundColor: 'rgba(, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+            },
+            {
+              label: 'Temperature',
+              data: entries.map((entry) => entry['temperature']),
+              fill: false,
+              backgroundColor: 'rgba(255, 206, 86, 0.2)',
+              borderColor: 'rgba(255, 206, 86,d 1)',
+            },
+            {
+              label: 'Humidity',
+              data: entries.map((entry) => entry['humidity']),
+              fill: false,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+            },
           ],
           options: {
             scales: {
@@ -116,33 +140,54 @@ const App = () => {
 
   return (
     <div className="app-container">
-      <div className="input-container">
-        <input
-          type="text"
-          placeholder="PM2_5"
-          name="pm2_5"
-          onChange={handleValueChange}
-        />
-        <input
-          type="text"
-          placeholder="VOC Index"
-          name="VOC_index"
-          onChange={handleValueChange}
-        />
-        <input
-          type="text"
-          placeholder="Temperature"
-          name="temperature"
-          onChange={handleValueChange}
-        />
-        <input
-          type="text"
-          placeholder="Humidity"
-          name="humidity"
-          onChange={handleValueChange}
-        />
-        <button className="add-button" onClick={handleAddClick}>Add</button>
-      </div>
+      <form className="input-container" onSubmit={handleAddClick}>
+        <div className="input-row">
+          <label htmlFor="pm2_5">PM2_5:</label>
+          <input
+            type="text"
+            placeholder="PM2_5"
+            name="pm2_5"
+            id="pm2_5"
+            onChange={handleValueChange}
+          />
+        </div>
+
+        <div className="input-row">
+          <label htmlFor="VOC_index">VOC Index:</label>
+          <input
+            type="text"
+            placeholder="VOC Index"
+            name="VOC_index"
+            id="VOC_index"
+            onChange={handleValueChange}
+          />
+        </div>
+
+        <div className="input-row">
+          <label htmlFor="temperature">Temperature:</label>
+          <input
+            type="text"
+            placeholder="Temperature"
+            name="temperature"
+            id="temperature"
+            onChange={handleValueChange}
+          />
+        </div>
+
+        <div className="input-row">
+          <label htmlFor="humidity">Humidity:</label>
+          <input
+            type="text"
+            placeholder="Humidity"
+            name="humidity"
+            id="humidity"
+            onChange={handleValueChange}
+          />
+        </div>
+
+        <button className="add-button" type="submit">Add</button>
+      </form>
+
 
       <div className="chart-container">
         { !loading ? (
