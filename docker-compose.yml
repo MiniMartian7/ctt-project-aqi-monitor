@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend # Path to your React frontend directory
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend # Path to your Node.js backend directory
+      dockerfile: Dockerfile
+    ports:
+      - "8800:8800" # Map host port 8800 to container port 8800
+    depends_on:
+      - database
+
+  database:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: parola1234
+      MYSQL_DATABASE: aqi_entry # Replace with your database name
+      MYSQL_USER: fabi # Replace with your database user
+      MYSQL_PASSWORD: parola567 # Replace with your database user password
+    ports:
+      - "3306:3306" # Map host port 3306 to container port 3306
